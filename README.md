@@ -1,11 +1,11 @@
 # UniSim: Towards Unified Benchmark and Models for Multi-Modal Perceptual Metrics
 
-### [Paper]() | [Results](#results) | [Dataset](#data) | [Checkpoints](#checkpoints) | [Acknowledgement](#ack) 
+### [Paper]() | [Dataset](#data) | [Checkpoints](#checkpoints) | [Acknowledgement](#ack) 
 
 <div align="center">
-<img src="assets/tasks.png" width="100%">
-<img src="assets/teaser.png" width="100%">
+<img src="assets/all_tasks.png" width="100%">
 </div>
+
 
 The key contributions and findings of our work are as follows:
 
@@ -20,9 +20,12 @@ The key contributions and findings of our work are as follows:
 - UniSim leverages fine-tuning of both encoder-based and generative vision-language models on a subset of tasks from UniSim-Bench, achieving the highest average performance. Notably, it even surpasses task-specific models in certain cases.
 
 - Despite these advancements, our findings reveal that the models continue to struggle with generalization to unseen tasks, underscoring the persistent challenge of developing a robust, unified perceptual similarity metric that aligns with human notions of similarity.
+  
 
-<a name="results"></a>
-### Results
+<div align="center">
+<img src="assets/teaser.png" width="100%">
+</div>
+
 
 <a name="data"></a>
 ### Dataset
