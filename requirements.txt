@@ -1,0 +1,21 @@
+git+https://github.com/haotian-liu/LLaVA.git
+pandas
+dreamsim
+datasets
+tqdm
+transformers
+sentencepiece
+protobuf
+accelerate
+open_clip_torch
+git+https://github.com/openai/CLIP.git
+peft
+fairscale>=0.4.13  # For ImageReward.
+spacy  # For CUB dataset.
+braceexpand
+timm
+fsspec
+einops
+opencv-python
+peft #for lora
+dreamsim
