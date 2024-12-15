@@ -13,7 +13,6 @@ from data.iqa.pie_app import PieAppIQADataset
 from data.prompt_constants import PROMPT_DICT, DATASET_TYPE, _get_model_type
 from data.iqa.sice import SICEPairs
 from data.retrieval.roxford_rparis import OxfordParisDataset
-from data.text_2afc.flickr import Flickr_8k
 from data.text_2afc.coco import CocoTriplets
 from data.text_2afc.cub import CUB200Pairs
 from data.text_2afc.foil import Foil
