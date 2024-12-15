@@ -23,15 +23,24 @@ The key contributions and findings of our work are as follows:
   
 
 <div align="center">
-<img src="assets/teaser.png" width="100%">
+<img src="assets/unisim-bench.png" width="100%">
 </div>
 
 
 <a name="data"></a>
 ### Dataset
+HuggingFace [link](https://huggingface.co/datasets/saraghznfri/unisim_data) for the UniSim-Bench data.
+
+<div align="center">
+<img src="assets/all_tasks.png" width="100%">
+</div>
 
 <a name="checkpoints"></a>
 ### Checkpoints
+
+- [UniSim_ViT_b_32](https://drive.google.com/file/d/1z8fQ3KSrih-diYqm9O_NazotlFTo8fN3/view?usp=sharing)
+- [UniSim_ViT_l_14](https://drive.google.com/file/d/1exLFqZvantuiu4yx2FtdGb8OcolvFg_f/view?usp=sharing) 
+- [UniSim_ll_n_0.5b](https://drive.google.com/file/d/1jvvjmn0AFyyGHXXqi4m5NcUATzKRz5Ug/view?usp=sharing) 
 
 <a name="ack"></a>
 ### Acknowledgement
