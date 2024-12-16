@@ -88,7 +88,7 @@ This work leverages the code and resources from [OpenCLIP](https://github.com/ml
 We thank the authors of these repositories and datasets for making their work publicly available and contributing to the research community.
 
 <a name="bibtex"></a>
-### Citations
+### Citation
 If you use our code or models, please consider citing our work using the following BibTex entry:
 ```bibtex
 ...
