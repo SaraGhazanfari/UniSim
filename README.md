@@ -1,6 +1,6 @@
 # UniSim: Towards Unified Benchmark and Models for Multi-Modal Perceptual Metrics
 
-### [Paper]() | [Dataset](#data) | [Checkpoints](#checkpoints) | [Quick Start](#quick) | [Acknowledgement](#ack) 
+### [Paper](https://arxiv.org/abs/2412.10594) | [Dataset](#data) | [Checkpoints](#checkpoints) | [Quick Start](#quick) | [Acknowledgement](#ack) 
 
 <div align="center">
 <img src="assets/all_tasks.jpg" width="100%">
