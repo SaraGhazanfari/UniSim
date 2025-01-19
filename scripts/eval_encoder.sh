@@ -78,8 +78,14 @@ declare -a tasks=(#
 )
 
 declare -a models=(#
+    "hf-hub:laion/CLIP-ViT-B-32-laion2B-s34B-b79K"
+    "openai/clip-vit-large-patch14-336"
+    "hf-hub:laion/CLIP-ViT-H-14-laion2B-s32B-b79K"
+    "hf-hub:timm/ViT-SO400M-14-SigLIP"
+    "blip"
     "dreamsim:open_clip_vitb32"
     "dreamsim:ensemble"
+    "ImageReward-v1.0"
     "hps"
     "pac-s"
     "liqe-mix" 

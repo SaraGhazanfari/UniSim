@@ -20,8 +20,25 @@ def make_dataset(base_path, part, ratio, split):
             images.append(path)
             if count >= count_ratio:
                 break
+    
+    # if part == 'judge':
+    #     new_images = []
+    #     for img in images: 
+    #         new_images.append(round(np.load(img)[0]))
+    #     return new_images
+    
     return images
 
+# def load_judge_from_csv(root_dir):
+#     import csv
+#     # Read the CSV file
+#     data = list()
+#     for dir in DEFAULT_DIRS['val']:
+#         csv_dir = os.path.join(root_dir, dir, 'test.csv')
+#         with open(csv_dir, mode='r', newline='', encoding='utf-8') as file:
+#             reader = csv.reader(file)
+#             data.extend([tuple(row) for row in reader])
+#     return data
 
 class BAPPSDataset:
 
@@ -46,6 +63,9 @@ class BAPPSDataset:
         self.p1_paths = sorted(self.p1_paths)
 
         # judgement directory
+        # if split == 'val':
+        #     self.judge_paths = load_judge_from_csv(self.roots)
+        # else:
         self.judge_paths = make_dataset(self.roots, part='judge', ratio=ratio, split=split)
         self.judge_paths = sorted(self.judge_paths)
 
@@ -63,3 +83,11 @@ class BAPPSDataset:
 
     def __len__(self):
         return len(self.p0_paths)
+    
+    
+# if __name__ == "__main__":
+#     import os
+#     import csv
+#     ds = BAPPSDataset(root_dir='/uni_data', split='test')
+#     print(len(ds))
+#     print(ds.__getitem__(0))

@@ -47,6 +47,7 @@ declare -a ckpts=(#
                  "lmms-lab/llava-next-interleave-qwen-0.5b"
                  "lmms-lab/llava-next-interleave-qwen-7b"
                  "TIGER-Lab/Mantis-8B-Idefics2"
+                 "path/to/unisim-0.5b"
                   )
                   
 for ckpt in "${ckpts[@]}"

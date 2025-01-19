@@ -33,7 +33,7 @@ class CocoTriplets(Dataset):
 
     def __init__(self, data_dir, score_type, transform_fn=None,
                  min_score=2, sampling_mode='rand', verbose=False, text_processor=None, instruct=None):
-        self.image_dir = join(data_dir, DEFAULT_DIRS['coco-images'])
+        self.image_dir = join(data_dir, CocoTriplets.name, DEFAULT_DIRS['coco-images'])
         self.captions = pd.read_csv(join(data_dir, DEFAULT_DIRS['coco-modelcaptions']))
         self.min_score = min_score
         self.scores = pd.read_csv(join(data_dir, DEFAULT_DIRS[score_type]))
@@ -60,8 +60,9 @@ class CocoTriplets(Dataset):
 
         if self.sampling_mode == 'rand':
             img_name = self.scores.loc[idx, 'Image_URL']
-            img = Image.open(join(self.image_dir, img_name))
+            img = join(self.image_dir, img_name)
             if self.transform_fn:
+                img = Image.open(img)
                 img = self.transform_fn(img)
             scores = {k: self.scores.loc[idx, k] for k in SCORE_TO_CAPTIONS_MAP.keys()}
             # Sample caption with highest score.
@@ -81,8 +82,10 @@ class CocoTriplets(Dataset):
         
         elif self.sampling_mode == 'all-zeros':
             img_name = self.all_triplets[idx][0]
-            img = Image.open(join(self.image_dir, img_name))
+            img = join(self.image_dir, img_name)
+            
             if self.transform_fn:
+                img = Image.open(img)
                 img = self.transform_fn(img)
             orig_idx = self.scores.index[self.scores['Image_URL'] == img_name][0]
             scores = {k: self.scores.loc[orig_idx, k] for k in SCORE_TO_CAPTIONS_MAP.keys()}
@@ -114,3 +117,18 @@ class CocoTriplets(Dataset):
             return len(self.scores)
         elif self.sampling_mode == 'all-zeros':
             return len(self.all_triplets)
+
+if __name__ == "__main__":
+    import shutil
+    import os
+    
+    ds = CocoTriplets(data_dir='/uni_data/coco-triplets', sampling_mode='all-zeros',
+                      score_type='coco-expertscores', min_score=3)
+    print(len(ds))
+    image_set = set()
+    for i in range(len(ds)):
+        image_set.add(ds.__getitem__(i)[0].replace('/uni_data/coco-triplets', '').replace('/images', ''))
+    
+    for img in image_set:
+        shutil.copy(img, os.path.join('./images/', img.split('/')[-1]))
+        

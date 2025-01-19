@@ -75,7 +75,7 @@ class Polaris(Dataset):
 
 
 if __name__ == "__main__":
-    ds = Polaris(data_dir='/vast/sg7457/uni_data', split='test')
+    ds = Polaris(data_dir='/uni_data', split='test')
     print(len(ds))
     for i in range(10):
         print(ds.__getitem__(i))

@@ -99,6 +99,7 @@ def eval(model, tokenizer, test_loader, args):
                 all += 1
                 if all > args.num_samples:
                     break
+                print(count, all, count/all)
 
 
     elif args.model_type == 'perc-metric':

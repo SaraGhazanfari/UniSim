@@ -44,7 +44,7 @@ The UniSim-Bench data can be found [here](https://huggingface.co/datasets/saragh
 We train three versions of our multi-task perceptual metric UniSim:
 - [UniSim_ViT_b_32](https://drive.google.com/file/d/1z8fQ3KSrih-diYqm9O_NazotlFTo8fN3/view?usp=sharing), where we fine-tune the vision encoder (ViT-B/32) of [laion/CLIP-ViT-B-32-laion2B-s34B-b79K](https://huggingface.co/laion/CLIP-ViT-B-32-laion2B-s34B-b79K)
 - [UniSim_ViT_l_14](https://drive.google.com/file/d/1exLFqZvantuiu4yx2FtdGb8OcolvFg_f/view?usp=sharing), where we fine-tune the vision encoder (ViT-L/14) of [openai/clip-vit-large-patch14](https://huggingface.co/openai/clip-vit-large-patch14)
-- [UniSim_ll_n_0.5b](https://drive.google.com/file/d/1jvvjmn0AFyyGHXXqi4m5NcUATzKRz5Ug/view?usp=sharing), where we fine-tune [LLaVA-NeXT-0.5B](https://huggingface.co/lmms-lab/llava-next-interleave-qwen-0.5b)
+- [UniSim_ll_n_0.5b](https://drive.google.com/file/d/1wUPBJ9-DqtmrlRDjfunckQlzf3PCMYIL/view?usp=sharing), where we fine-tune [LLaVA-NeXT-0.5B](https://huggingface.co/lmms-lab/llava-next-interleave-qwen-0.5b)
 
 <a name="quick"></a>
 ### Quick Start
