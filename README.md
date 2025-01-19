@@ -81,6 +81,14 @@ pred = get_unisim_metric(model_name, model_path, task_type, images, texts, devic
 print(f'Task: {task_type}, Pred: {pred}')
 ```
 <a name="ack"></a>
+
+- Evaluation scripts for other metrics:
+  
+```
+bash scripts/eval_encoder.sh 
+bash scripts/eval_lmm.sh
+```
+
 ### Acknowledgement
 
 This work leverages the code and resources from [OpenCLIP](https://github.com/mlfoundations/open_clip) and [LLaVA-Next](https://github.com/LLaVA-VL/LLaVA-NeXT) repositories. Moreover, we use several existing datasets, whose details and references can be found in our paper.
@@ -90,6 +98,11 @@ We thank the authors of these repositories and datasets for making their work pu
 <a name="bibtex"></a>
 ### Citation
 If you use our code or models, please consider citing our work using the following BibTex entry:
-```bibtex
-...
+```
+@article{ghazanfari2024towards,
+  title={Towards Unified Benchmark and Models for Multi-Modal Perceptual Metrics},
+  author={Ghazanfari, Sara and Garg, Siddharth and Flammarion, Nicolas and Krishnamurthy, Prashanth and Khorrami, Farshad and Croce, Francesco},
+  journal={arXiv preprint arXiv:2412.10594},
+  year={2024}
+}
 ```
