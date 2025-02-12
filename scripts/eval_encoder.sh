@@ -14,7 +14,7 @@ evaluate() {
         do
             for task in "${tasks[@]}"
             do
-                $SCRATCH/pytorch-example/python -m $task \
+                python -m $task \
                     --cache_dir $CACHE_DIR \
                     --data-path $DATA_DIR \
                     --model_dir $MODEL_DIR \
