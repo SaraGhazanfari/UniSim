@@ -54,7 +54,7 @@ for ckpt in "${ckpts[@]}"
     do
     for task in "${tasks[@]}"
     do
-        $SCRATCH/pytorch-example/python -m $task \
+        python -m $task \
             --cache_dir ./ \
             --data-path $DATA_DIR \
             --model-path $ckpt \
