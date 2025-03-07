@@ -62,20 +62,15 @@ class Polaris(Dataset):
             
         if self.text_preprocess is not None:
             caps = [self.text_preprocess(cap) for cap in caps] 
-
+            
+        img = Image.open(join(self.data_dir, 'images', img)).convert('RGB')
         if self.img_preprocess is not None:
-            img = Image.open(join(self.data_dir, 'images', img)).convert('RGB')
+            
             # img = Image.open(join(self.data_dir, 'images', img))
             img = self.img_preprocess(img)
         
-        return img, *caps, label
+        return img, caps, label
 
     def __len__(self):
         return len(self.dataset)
 
-
-if __name__ == "__main__":
-    ds = Polaris(data_dir='/uni_data', split='test')
-    print(len(ds))
-    for i in range(10):
-        print(ds.__getitem__(i))

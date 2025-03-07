@@ -1,6 +1,7 @@
 import torch as torch
 import torch.nn.functional as F
 
+from data.prompt_constants import internvl_prompt, qwen_prompt
 from data import preprocess_prompt  # get_data
 from eval.utils import get_c2s_score, parse_args, get_model_and_data  # , get_any_model, fix_seed
 from perc_models.utils_perceptual_eval import get_acc
@@ -76,30 +77,63 @@ def eval(model, tokenizer, test_loader, args):
     to the reference.
     """
 
-    print(f'Evaluating {args.data} dataset.')
+    print(f'Evaluating {args.data} dataset with length {len(test_loader)}.')
 
     if args.model_type == 'gen-lmmm':
         count, all = 0, 0
 
-        input_ids = preprocess_prompt(args, tokenizer)
-
         with torch.no_grad():
             for i, (_img0, _img1, _img2, target, _) in enumerate(test_loader):
 
-                target = target.to(args.device)
                 if 'Mantis' in args.model_path:
+                    input_ids = preprocess_prompt(args, tokenizer)
                     input_ids, pred = eval_mantis(_img0, _img1, _img2, args, input_ids, model, tokenizer)
 
                 elif 'q-future' in args.model_path:
+                    input_ids = preprocess_prompt(args, tokenizer)
                     pred = eval_q_future(_img0, _img1, _img2, args, input_ids, model, tokenizer)
+                    
+                elif 'InternVL2_5' in args.model_path:
+                    generation_config = dict(max_new_tokens=1024, do_sample=True)
+                    num_patches_list = [_img0.size(0), _img1.size(0), _img2.size(0)]
+                    imgs = torch.concat([_img0, _img1, _img2], dim=0).to(args.device, dtype=model.dtype)
+                    outputs = model.chat(tokenizer, imgs, internvl_prompt['2afc'], generation_config, num_patches_list=num_patches_list)
+                    pred = 0 if ('A' in outputs or 'left' in outputs or '2' in outputs) else 1
 
+                elif 'Qwen' in args.model_path:
+                    text = tokenizer.apply_chat_template(
+                                qwen_prompt['2afc'], tokenize=False, add_generation_prompt=True
+                            )
+                    inputs = tokenizer(
+                        text=[text],
+                        images=[_img0, _img1, _img2],
+                        padding=True,
+                        return_tensors="pt",
+                    )
+                    if i == 0:
+                        print(text)
+                        print(inputs)
+                        print(inputs['input_ids'].shape, inputs['pixel_values'].shape)
+                        print(_img0.size)
+                    inputs = inputs.to("cuda")
+                    generated_ids = model.generate(**inputs, max_new_tokens=128)
+                    generated_ids_trimmed = [
+                        out_ids[len(in_ids) :] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+                    ]
+                    outputs = tokenizer.batch_decode(
+                        generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
+                    )[0]
+                    pred = 0 if ('A' in outputs or 'left' in outputs or '2' in outputs) else 1
+                    
                 else:
+                    input_ids = preprocess_prompt(args, tokenizer)
                     pred = eval_llava_next(_img0, _img1, _img2, args, input_ids, model, tokenizer)
-                count += pred == round(target.item())
+                    
+                count += pred == round(target)
                 all += 1
-                if all > args.num_samples:
+                if all >= args.num_samples:
                     break
-                print(count, all, count/all)
+                print(f'dataset: {args.data}, clean accuracy: {count / all:.1%} ({count:.0f}/{all})', flush=True)
 
 
     elif args.model_type == 'perc-metric':
@@ -146,7 +180,7 @@ def eval(model, tokenizer, test_loader, args):
         args.logger.log(
             f'dataset: {args.data}, clean accuracy: {count / all:.1%} ({count:.0f}/{all})')
         
-    print(f'Model: {args.modelname} CKPT: {args.ckptpath} Data: {args.data} Total Accuracy: {count / all:.1%} ({count}/{all})')
+    print(f'Model: {args.model_path} CKPT: {args.ckptpath} Data: {args.data} Total Accuracy: {count / all:.1%} ({count}/{all})')
 
 
 

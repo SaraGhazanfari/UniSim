@@ -9,6 +9,17 @@ DEFAULT_DIRS = {
     'sice-pairs-p2': 'sice/Dataset_Part2/',
 }
 
+def resize_image_by_scale(img, scale):
+    width, height = img.size
+
+    # Compute new dimensions
+    new_width = int(width * scale)
+    new_height = int(height * scale)
+
+    # Resize the image
+    resized_img = img.resize((new_width, new_height), Image.LANCZOS)
+
+    return resized_img
 
 def calculate_brightness(image_path):
     import numpy as np
@@ -75,22 +86,12 @@ class SICEPairs(Dataset):
 
     def __getitem__(self, idx):
         imgs, scores = self.l_imgs[idx]['imgs'], self.l_imgs[idx]['ranks']
+        imgs = [resize_image_by_scale(Image.open(_img).convert('RGB'), scale=0.2) for _img in imgs]
         lab = 0 if scores[0] > scores[1] else 1
         if self.verbose:
             print(imgs)
         if self.transform_fn:
-            imgs = [self.transform_fn(Image.open(_img).convert('RGB')) for _img in imgs]
+            imgs = [self.transform_fn(_img) for _img in imgs]
 
         return *imgs, lab, scores
 
-
-if __name__ == "__main__":
-    ds = SICEPairs(data_dir='/vast/sg7457/uni_data', split='train')
-    print(len(ds))
-    for i in range(1):
-        print(ds.__getitem__(i))
-
-    ds = SICEPairs(data_dir='/vast/sg7457/uni_data', split='test')
-    print(len(ds))
-    for i in range(1):
-        print(ds.__getitem__(i))

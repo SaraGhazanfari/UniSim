@@ -61,6 +61,7 @@ class ImageRewardPairs(Dataset):
         if self.img_preprocess is not None:
             img1 = self.img_preprocess(img1)
             img2 = self.img_preprocess(img2)
+        print(img1, img2, lab, prompt)
         return img1, img2, lab, prompt  # , prompt_id
 
     def __len__(self):

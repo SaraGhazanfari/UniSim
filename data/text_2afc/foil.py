@@ -55,7 +55,3 @@ class Foil(Dataset):
     def __len__(self):
         return len(self.id_list)
     
-if __name__ == "__main__":
-    ds = Foil(data_dir='/vast/sg7457/uni_data', split='val')
-    # print(len(ds))
-    # print(ds.__getitem__(0))

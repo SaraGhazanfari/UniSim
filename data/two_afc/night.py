@@ -40,11 +40,12 @@ class NightDataset(Dataset):
 
     def __getitem__(self, idx):
         p = self.csv.iloc[idx, 2].astype(np.float32)
-        imgs = [os.path.join(self.root_dir, self.csv.iloc[idx, 4]), #ref
-                os.path.join(self.root_dir, self.csv.iloc[idx, 5]),  # left
-                os.path.join(self.root_dir, self.csv.iloc[idx, 6])  # right
+        imgs = [Image.open(os.path.join(self.root_dir, self.csv.iloc[idx, 4])), #ref
+                Image.open(os.path.join(self.root_dir, self.csv.iloc[idx, 5])),  # left
+                Image.open(os.path.join(self.root_dir, self.csv.iloc[idx, 6]))  # right
                 ] 
+
         if self.image_processor:
-            imgs = [self.image_processor(Image.open(_img)) for _img in imgs]
+            imgs = [self.image_processor(_img) for _img in imgs]
         return *imgs, p, idx
 

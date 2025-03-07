@@ -71,23 +71,13 @@ class BAPPSDataset:
 
     def __getitem__(self, index):
         imgs = [self.ref_paths[index], self.p0_paths[index], self.p1_paths[index]]
-        
+        imgs = [Image.open(img).convert('RGB') for img in imgs]
         if self.image_processor:
-            imgs = [Image.open(img).convert('RGB') for img in imgs]
-            #print(imgs[0].size)
             imgs = [self.image_processor(img) for img in imgs]
-            #print(imgs[0].shape)
             
         p = float(round(np.load(self.judge_paths[index])[0])) #.reshape((1, 1, 1,))  # [0,1]
         return *imgs, p, index
 
     def __len__(self):
         return len(self.p0_paths)
-    
-    
-# if __name__ == "__main__":
-#     import os
-#     import csv
-#     ds = BAPPSDataset(root_dir='/uni_data', split='test')
-#     print(len(ds))
-#     print(ds.__getitem__(0))
+

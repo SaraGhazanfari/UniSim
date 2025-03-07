@@ -2,6 +2,7 @@ import torch as torch
 from torch.utils.data import DataLoader
 import torch.nn.functional as F
 
+from data.prompt_constants import internvl_prompt, qwen_prompt
 from data import preprocess_prompt  # get_data
 from eval.utils import parse_args, get_model_and_data #get_any_model
 from perc_models.utils_perceptual_eval import get_acc
@@ -18,10 +19,11 @@ def eval(model, tokenizer, test_loader, args):
         count = 0
         all = 0
         device = args.device
-        input_ids = preprocess_prompt(args, tokenizer)
+        
         with torch.no_grad():
             for e, (_img0, _img1, _img2, lab, idx) in enumerate(test_loader):
                 if 'Mantis' in args.model_path:
+                    input_ids = preprocess_prompt(args, tokenizer)
                     images = {
                         'pixel_values': torch.cat(
                             (_img0['pixel_values'].squeeze(0), _img1['pixel_values'].squeeze(0),
@@ -40,7 +42,41 @@ def eval(model, tokenizer, test_loader, args):
                         max_new_tokens=1024,
                         use_cache=True)
                     output_ids = output_ids[:, input_ids["input_ids"].shape[1]:]
+                    outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0].strip()
+                    
+                elif 'InternVL2_5' in args.model_path:
+                    generation_config = dict(max_new_tokens=1024, do_sample=True)
+                    num_patches_list = [_img0.size(0), _img1.size(0), _img2.size(0)]
+                    imgs = torch.concat([_img0, _img1, _img2], dim=0).to(args.device, dtype=model.dtype)
+                    outputs = model.chat(tokenizer, imgs, internvl_prompt['3afc'], generation_config, num_patches_list=num_patches_list)
+
+
+                elif 'Qwen' in args.model_path:
+                    try:
+                        text = tokenizer.apply_chat_template(
+                                    qwen_prompt['3afc'], tokenize=False, add_generation_prompt=True
+                                )
+                        inputs = tokenizer(
+                            text=[text],
+                            images=[_img0, _img1, _img2],
+                            padding=True,
+                            return_tensors="pt",
+                        )
+                        if e == 0:
+                            print(text)
+
+                        inputs = inputs.to("cuda")
+                        generated_ids = model.generate(**inputs, max_new_tokens=128)
+                        generated_ids_trimmed = [
+                            out_ids[len(in_ids) :] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+                        ]
+                        outputs = tokenizer.batch_decode(
+                            generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
+                        )[0]
+                    except Exception as e:
+                        print(e)
                 else:
+                    input_ids = preprocess_prompt(args, tokenizer)
                     _img0, _img1, _img2 = _img0['pixel_values'].squeeze(0).to(device, dtype=model.dtype), \
                         _img1['pixel_values'].squeeze(0).to(device, dtype=model.dtype), \
                         _img2['pixel_values'].squeeze(0).to(device, dtype=model.dtype)
@@ -56,14 +92,14 @@ def eval(model, tokenizer, test_loader, args):
                             max_new_tokens=args.max_new_tokens,
                             use_cache=True)
 
-                outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0].strip()
+                    outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0].strip()
                 answ = outputs.split('.')[0]
                 answ = answ.replace('Answer: ', '')
                 pred = 'A' if 'A' in answ or '1' in answ else 'B' if 'B' in answ or '2' in answ else 'C'
                 target = ['A', 'B', 'C'][lab]
                 count += float(pred == target)
-
                 all += 1
+                print(f'dataset: {args.data}, clean accuracy: {count / all:.1%} ({count:.0f}/{all})', flush=True)
                 if all >= args.num_samples:
                     break
 
@@ -114,7 +150,7 @@ def eval(model, tokenizer, test_loader, args):
         args.logger.log(
             f'dataset: {args.data}, clean accuracy: {count / all:.1%} ({count:.0f}/{all})')
         
-    print(f'Model: {args.modelname} CKPT: {args.ckptpath} Data: {args.data} Total Accuracy: {count / all:.1%} ({count}/{all})')
+    print(f'Model: {args.model_path} CKPT: {args.ckptpath} Data: {args.data} Total Accuracy: {count / all:.1%} ({count}/{all})')
 
 
 

@@ -32,10 +32,10 @@ class MagicBrush(Dataset):
 
         if self.text_preprocess is not None:
             caps = self.text_preprocess(caps)
-
+        imgs = [Image.open(_im).convert('RGB') for _im in imgs]
         if self.img_preprocess is not None:
-            imgs = [self.img_preprocess(Image.open(_im).convert('RGB')) for _im in imgs]
-            # imgs = [self.img_preprocess(Image.open(_im).convert('RGB')) for _im in imgs]
+            imgs = [self.img_preprocess(_im) for _im in imgs]
+            
 
         label = random.randint(0, 1)  # 0 or 1
         if label == 0:

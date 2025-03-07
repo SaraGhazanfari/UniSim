@@ -72,10 +72,5 @@ class BirdsToWords(Dataset):
 
     def __len__(self):
         return len(self.annotations)
-    
-if __name__ == "__main__":
-    ds = BirdsToWords(data_dir='/vast/sg7457/uni_data', split='train')
-    print(len(ds))
-    print(ds.__getitem__(0))
 
     

@@ -59,11 +59,3 @@ class AMBERDataset(Dataset):
     def __len__(self):
         return len(self.dataset)
     
-if __name__ == "__main__":
-    ds = AMBERDataset(data_dir='/vast/sg7457/uni_data', split='val')
-    print(ds.__getitem__(0))
-    print(len(ds))
-    
-    ds = AMBERDataset(data_dir='/vast/sg7457/uni_data', split='val', n_text=5)
-    print(ds.__getitem__(0))
-    print(len(ds))

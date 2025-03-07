@@ -31,11 +31,11 @@ class KADID10k(Dataset):
             return csv.iloc[num_rows:]
 
     def __getitem__(self, idx):
-        dist = os.path.join(self.root_dir, 'images', self.csv.loc[idx, 'dist_img'])
-        ref = os.path.join(self.root_dir, 'images', self.csv.loc[idx, 'ref_img'])
-        if self.transform_fn is not None:
-            dist = Image.open(dist)
-            ref = Image.open(ref)
+        dist = Image.open(os.path.join(self.root_dir, 'images', self.csv.loc[idx, 'dist_img']))
+        ref = Image.open(os.path.join(self.root_dir, 'images', self.csv.loc[idx, 'ref_img']))
+        # if self.transform_fn is not None:
+            # dist = Image.open(dist)
+            # ref = Image.open(ref)
 
         return dist, ref, self.csv.loc[idx, 'dmos'], self.csv.loc[idx, 'var']
 
@@ -70,10 +70,10 @@ class KADID10kPairs(KADID10k):
             lab = int(sevs[0] > sevs[1])  # 0 -> img0 is the better one (lower severity)
             if self.verbose:
                 print(sevs, f'label={lab}')
-            imgs = [os.path.join(self.root_dir, 'images', _im) for _im in imgs]
+            imgs = [Image.open(os.path.join(self.root_dir, 'images', _im)) for _im in imgs]
             
             if self.transform_fn is not None:
-                imgs = [self.transform_fn(Image.open(_im)) for _im in imgs]
+                imgs = [self.transform_fn(_im) for _im in imgs]
 
             return *imgs, lab, 0
 
@@ -91,8 +91,8 @@ class KADID10kPairs(KADID10k):
             if self.verbose:
                 print(f'corr={corrs}', f'sev={sev}', f'mos={dmos}', f'label={lab}')
 
-            imgs = [os.path.join(self.root_dir, 'images', _im) for _im in imgs]
+            imgs = [Image.open(os.path.join(self.root_dir, 'images', _im)) for _im in imgs]
             if self.transform_fn is not None:
-                imgs = [self.transform_fn(Image.open(_im)) for _im in imgs]
+                imgs = [self.transform_fn(_im) for _im in imgs]
 
             return *imgs, lab, 0

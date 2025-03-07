@@ -16,7 +16,7 @@ def main(args):
         from eval import odd_one_out_eval
         odd_one_out_eval.eval(model, tokenizer, dataloader, args)
         
-    elif args.data ['kadid-pairs', 'koniq-pairs', 'pie-app-iqa', 'agiqa3k-qual-pairs', 'pipal']:
+    elif args.data in ['kadid-pairs', 'koniq-pairs', 'pie-app-iqa', 'agiqa3k-qual-pairs', 'pipal']:
         from eval import image_quality_eval
         image_quality_eval.eval(model, tokenizer, dataloader, args)
     
