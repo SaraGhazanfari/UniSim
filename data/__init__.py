@@ -1,6 +1,7 @@
 import copy
 import os
 
+from data.utils import build_transform, dynamic_preprocess
 import torch
 import torchvision
 
@@ -56,7 +57,19 @@ def get_processor(args, image_processor):
         from models.llava_next.model.multimodal_encoder.siglip_encoder import SigLipImageProcessor
         _prep = lambda x: image_processor.preprocess(images=x, return_tensors='pt')
         return _prep
+    if 'InternVL2_5' in args.model_path:
+        def load_image(image, input_size=448, max_num=12):
 
+            transform = build_transform(input_size=input_size)
+            images = dynamic_preprocess(image, image_size=input_size, use_thumbnail=True, max_num=max_num)
+            pixel_values = [transform(image) for image in images]
+            pixel_values = torch.stack(pixel_values)
+            return pixel_values
+        return load_image
+    
+    if 'Qwen' in args.model_path:
+        return None
+    
     if (isinstance(image_processor, transforms.transforms.Compose) or
           args.modelname in ['liqe-mix',
                              'liqe-koniq',
@@ -68,11 +81,12 @@ def get_processor(args, image_processor):
 
 
 def get_tokenizer(args, tokenizer):
-    if args.model_type == 'gen-lmmm' and 'q-future' in args.model_path:
-        return None
+
     
     if args.model_type == 'gen-lmmm':
-
+        if 'Qwen' in args.model_path or 'InternVL2_5' in args.model_path or 'q-future' in args.model_path:
+            return None
+        
         def _prep(x):
 
             if 'llava-next' in args.model_path or 'unisim' in args.model_path:
@@ -147,7 +161,7 @@ def get_data(args, tokenizer, image_processor, split='test'):
         return test_dataset
 
     if args.data == 'bapps':
-        test_dataset = BAPPSDataset(root_dir=args.data_path, split=f'val', image_processor=_prep)
+        test_dataset = BAPPSDataset(root_dir=args.data_path, split=f'val', image_processor=_prep, ratio=0.15)
         return test_dataset
 
     if args.data == 'things':

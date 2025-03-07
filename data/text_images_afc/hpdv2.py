@@ -88,9 +88,9 @@ class HPDv2Pairs(Dataset):
                 if lab == 0:
                     imgs = imgs[::-1]
 
-        imgs = [join(self.data_dir, self.split, _im) for _im in imgs]
+        # imgs = [join(self.data_dir, self.split, _im) for _im in imgs]
+        imgs = [Image.open(join(self.data_dir, self.split, _im)).convert('RGB') for _im in imgs]
         if self.img_preprocess is not None:
-            imgs = [Image.open(join(self.data_dir, self.split, _im)).convert('RGB') for _im in imgs]
             imgs = [self.img_preprocess(_im) for _im in imgs]
         
         if self.n_imgs > 2:

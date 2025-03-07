@@ -2,7 +2,7 @@ import torch as torch
 import torch.nn.functional as F
 #from torch.utils.data import DataLoader
 
-#from data import get_data
+from data.prompt_constants import qwen_prompt, internvl_prompt
 from eval.utils import parse_args, get_model_and_data
 
 
@@ -19,7 +19,7 @@ def eval(model, tokenizer, test_loader, args):
         all = 0
         while all < args.num_samples:
             with torch.no_grad():
-                for _, (img0, img1, lab, prompt) in enumerate(test_loader):
+                for idx, (img0, img1, lab, prompt) in enumerate(test_loader):
                     if 'Mantis' in args.model_path:
                         images = {
                             'pixel_values': torch.cat(
@@ -36,13 +36,48 @@ def eval(model, tokenizer, test_loader, args):
                             max_new_tokens=1024,
                             use_cache=True)
                         output_ids = output_ids[:, prompt["input_ids"].shape[1]:]
+                        outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0].strip()
+                        
+                    elif 'InternVL2_5' in args.model_path:
+                        generation_config = dict(max_new_tokens=1024, do_sample=True)
+                        num_patches_list = [img0.size(0), img1.size(0)]
+                        imgs = torch.concat([img0, img1], dim=0).to(args.device, dtype=model.dtype)
+                        outputs = model.chat(tokenizer, imgs, internvl_prompt['text_images_afc'].format(prompt=prompt),
+                                            generation_config, num_patches_list=num_patches_list)
+
+                    elif 'Qwen' in args.model_path:
+                        temp_prompt = qwen_prompt['text_images_afc']
+                        temp_prompt[0]['content'][3]['text'] = temp_prompt[0]['content'][3]['text'].format(prompt=prompt)
+
+                        text = tokenizer.apply_chat_template(
+                                    temp_prompt, tokenize=False, add_generation_prompt=True
+                                )
+                        inputs = tokenizer(
+                            text=[text],
+                            images=[img0, img1],
+                            padding=True,
+                            return_tensors="pt",
+                        )
+                        if idx == 0:
+                            print(text)
+                            print(inputs)
+                            print(inputs['input_ids'].shape, inputs['pixel_values'].shape)
+                            print(img0.size)
+                        inputs = inputs.to("cuda")
+                        generated_ids = model.generate(**inputs, max_new_tokens=128)
+                        generated_ids_trimmed = [
+                            out_ids[len(in_ids) :] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+                        ]
+                        outputs = tokenizer.batch_decode(
+                            generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
+                        )[0]
                     else:
-                        prompt, img0, img1, lab = prompt.to(args.device), \
+                        prompt, img0, img1 = prompt.to(args.device), \
                             img0['pixel_values'].squeeze(0).to(args.device, dtype=model.dtype), \
-                            img1['pixel_values'].squeeze(0).to(args.device, dtype=model.dtype), lab.to(args.device)
+                            img1['pixel_values'].squeeze(0).to(args.device, dtype=model.dtype)
                         with torch.inference_mode():
                             output_ids = model.generate(
-                                prompt,
+                                prompt.unsqueeze(0),
                                 images=[img0, img1],
                                 image_sizes=224,
                                 do_sample=True if args.temperature > 0 else False,
@@ -52,12 +87,13 @@ def eval(model, tokenizer, test_loader, args):
                                 max_new_tokens=args.max_new_tokens,
                                 use_cache=True)
 
-                    outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0].strip()
+                        outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0].strip()
+                        
                     pred = 0 if ('A' in outputs or 'left' in outputs or '1' in outputs) else 1
                     count += float(pred == lab)
-                    
                     all += 1
 
+                    print(f'dataset: {args.data}, clean accuracy: {count / all:.1%} ({count:.0f}/{all})', flush=True)
                     if all >= args.num_samples:
                         break
 
@@ -94,9 +130,10 @@ def eval(model, tokenizer, test_loader, args):
                     pred = sim0 < sim1  # Predict the most similar image (0 --> `img0` is more similar)
                     count += (pred.long().to(lab.device) == lab).float().sum()
                     all += img0.shape[0]
-
+                    
                     if all >= args.num_samples:
                         break
+                    
 
     elif args.model_type == 'score-model':
         all, count = 0, 0
@@ -120,7 +157,7 @@ def eval(model, tokenizer, test_loader, args):
         args.logger.log(
             f'dataset: {args.data}, clean accuracy: {count / all:.1%} ({count:.0f}/{all})')
         
-    print(f'Model: {args.modelname} CKPT: {args.ckptpath} Data: {args.data} Total Accuracy: {count / all:.1%} ({count}/{all})')
+    print(f'Model: {args.model_path} CKPT: {args.ckptpath} Data: {args.data} Total Accuracy: {count / all:.1%} ({count}/{all})')
 
 
 

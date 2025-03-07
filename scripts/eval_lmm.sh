@@ -5,7 +5,6 @@ MODEL_DIR='all_models/'
 export HF_HOME=$CACHE_DIR
 
 declare -a tasks=(#
-
                 "eval.total_eval --data night --split test --num-samples 1824 --batch-size 1"
                 "eval.total_eval --data bapps --split val --num-samples 5000 --batch-size 1"
                 "eval.total_eval --data pie-app-2afc --split test --num-samples 3314 --batch-size 1"
@@ -32,23 +31,21 @@ declare -a tasks=(#
             
                 "eval.total_eval --data sice-pairs-h --split test --num-samples 2151 --batch-size 1 --mode naive"
 
-                "eval.total_eval --data koniq-brightness-pairs --split test --num-samples 5000 --batch-size 1 --mode naive"
+                sl.total_eval --data koniq-sharpness-pairs --split test --num-samples 5000 --batch-size 1 --mode naive"
 
-                "eval.total_eval --data koniq-colorfulness-pairs --split test --num-samples 5000 --batch-size 1 --mode naive"
+                "eval.total_eval  --data h-imagenet-triplets --num-samples 5000 --batch-size 1"
+                "eval.total_eval --data cifar100coarse-triplets --num-samples 5000 --batch-size 1" 
+                )
 
-                "eval.total_eval --data koniq-contrast-pairs --split test --num-samples 5000 --batch-size 1 --mode naive"
 
-                "eval.total_eval --data koniq-sharpness-pairs --split test --num-samples 5000 --batch-size 1 --mode naive"
-
-                "eval.total_eval  --data h-imagenet-triplets --num-samples 5000 --batch-size 1" 
-                "eval.total_eval --data cifar100coarse-triplets --num-samples 5000 --batch-size 1"
-)
 declare -a ckpts=(#
-                 "lmms-lab/llava-next-interleave-qwen-0.5b"
-                 "lmms-lab/llava-next-interleave-qwen-7b"
-                 "TIGER-Lab/Mantis-8B-Idefics2"
-                 "path/to/unisim-0.5b"
-                  )
+                "lmms-lab/llava-next-interleave-qwen-0.5b"
+                "lmms-lab/llava-next-interleave-qwen-7b"
+                "TIGER-Lab/Mantis-8B-Idefics2"
+                "Qwen/Qwen2-VL-7B-Instruct" 
+                "OpenGVLab/InternVL2_5-8B"
+                "path/to/unisim-0.5b"
+                )
                   
 for ckpt in "${ckpts[@]}"
     do
@@ -56,11 +53,11 @@ for ckpt in "${ckpts[@]}"
     do
         python -m $task \
             --cache_dir ./ \
-            --data-path $DATA_DIR \
             --model-path $ckpt \
             \
             --temperature 0 \
             --num-workers 10 \
+            --data-path $DATA_DIR \
             \
             \
             --seed 0 

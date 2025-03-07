@@ -49,6 +49,137 @@ DATASET_TYPE = {'night': '2afc',
                 'polaris': 'text_2afc',
                 }
 
+
+
+internvl_prompt = {'2afc':  'Answer the following multiple-choice question:\nHere are three images: Image 1: <image>, Image 2: <image> Image 3: <image>.\n'\
+                    'If image 1 is the reference image, which image of the other two is more similar to the reference image? just choose the image with no explanations'\
+                    '\nOptions:\n(A) Image 2\n(B) Image 3',
+                
+                     '3afc': "Answer the following multiple-choice question:\nHere are three images: <image> <image> <image>" \
+                             'Which one of images is the odd-one-out of the group?' \
+                             '\nOptions:\n(A) Image 1\n(B) Image 2 (C) Image 3',
+                             
+                     'text_images_afc': 'Answer the following question:\nHere are two images: <image> <image>,\n'\
+                        'and here is the reference caption: "{prompt}". which of the two images is '\
+                        'more aligned to the reference caption? just choose the caption with no explanations' \
+                        '\nOptions:\n(A) Image 1\n(B) Image 2',
+                        
+                     'text_images_many': 'Answer the following multiple-choice question:\nHere are three images: <image> <image> <image>, '\
+                        'and here is the reference caption: "{prompt}". which of the three images is '\
+                        'more aligned to the reference caption? \n' \
+                        '(select from Image 1, Image 2, Image 3)' ,
+                        
+                     'iqa': 'Answer the following multiple-choice question:\nGiven two images: image 1 <image> and image 2 <image>.' \
+                               'which image has a better quality? just choose the image with no explanations\n' \
+                               '\nOptions:\n(A) Image 1\n(B) Image 2', 
+                               
+                     'text_2afc': 'Given the reference image: <image>. ' \
+                                    'and two captions, caption 1: "{cap1}", caption 2: "{cap2}" \n' \
+                                     'which caption has a better alignment with the reference image? just choose the caption with no explanations\n' \
+                                     'Options:\n(A) Caption 1\n(B) Caption 2',
+                                     
+                     'colorfulness': 'Answer the following multiple-choice question:\nGiven two images: image 1 <image> and image 2 <image>.' \
+                               ' which image is more colorful?\n' \
+                               '\nOptions:\n(A) Image 1\n(B) Image 2',
+                               
+        
+                     'brightness': 'Answer the following multiple-choice question:\nGiven two images: image 1 <image> and image 2 <image>.' \
+                               ' which image is brighter?\n' \
+                               '\nOptions:\n(A) Image 1\n(B) Image 2',
+
+                     'contrast': 'Answer the following multiple-choice question:\nGiven two images: image 1 <image> and image 2 <image>.' \
+                               ' which image has more contrast?\n' \
+                               '\nOptions:\n(A) Image 1\n(B) Image 2',
+                     'sharpness': 'Answer the following multiple-choice question:\nGiven two images: image 1 <image> and image 2 <image>.' \
+                               ' which image is sharper?\n' \
+                               '\nOptions:\n(A) Image 1\n(B) Image 2'}
+
+qwen_prompt = {'2afc': [{
+                    "role": "user",
+                    "content": [{"type": "text", "text": 'Answer the following multiple-choice question:\nHere are three images:'},
+                                {"type": "image"},
+                                {"type": "image"},
+                                {"type": "image"},
+                                {"type": "text", "text":'If image 1 is the reference image, which image of the other two'\
+                                    'is more similar to the reference image? just choose the image with no explanations'\
+                                    '\nOptions:\n(A) Image 2\n(B) Image 3'}]
+                }],
+
+               '3afc': [{
+                    "role": "user",
+                    "content": [{"type": "text", "text": 'Answer the following multiple-choice question:\nHere are three images:'},
+                                {"type": "image"},
+                                {"type": "image"},
+                                {"type": "image"},
+                                {"type": "text", "text":"Which one of images is the odd-one-out of the group?" \
+                             '\nOptions:\n(A) Image 1\n(B) Image 2 (C) Image 3'}]
+                }],
+
+                'text_images_afc':[{
+                            "role": "user",
+                            "content": [{"type": "text", "text": 'Answer the following multiple-choice question:\nHere are two images:'},
+                                        {"type": "image"},
+                                        {"type": "image"},
+                                        {"type": "text", "text":'which of the two images is '\
+                                                                'more aligned to the reference caption: "{prompt}"? just choose the image with no explanations' \
+                                                                '\nOptions:\n(A) Image 1\n(B) Image 2'}]
+                            }],
+
+                'text_images_many': '',
+
+                'iqa':  [{
+                    "role": "user",
+                    "content": [{"type": "text", "text": 'Answer the following multiple-choice question:\nGiven two images:'},
+                                {"type": "image"},
+                                {"type": "image"},
+                                {"type": "text", "text":'which image has a better quality? just choose the image with no explanations\n' \
+                               '\nOptions:\n(A) Image 1\n(B) Image 2'}]
+                }],
+
+                'text_2afc': [{
+                    "role": "user",
+                    "content": [{"type": "text", "text": 'Given the reference image:'},
+                                {"type": "image"},
+                                {"type": "text", "text":'and two captions,\n Caption 1: "{cap1}"\n, Caption 2: "{cap2}" \n' \
+                                     'which caption has a better alignment with the reference image? just choose the caption with no explanations\n' \
+                                     'Options:\n(A) Caption 1\n(B) Caption 2'}]
+                }],
+
+                'colorfulness':  [{
+                    "role": "user",
+                    "content": [{"type": "text", "text": 'Answer the following multiple-choice question:\nGiven two images:'},
+                                {"type": "image"},
+                                {"type": "image"},
+                                {"type": "text", "text":'which image is more colorful? just choose the image with no explanations\n' \
+                               '\nOptions:\n(A) Image 1\n(B) Image 2'}]
+                }],
+
+
+                'brightness':  [{
+                    "role": "user",
+                    "content": [{"type": "text", "text": 'Answer the following multiple-choice question:\nGiven two images:'},
+                                {"type": "image"},
+                                {"type": "image"},
+                                {"type": "text", "text":'which image is brighter? just choose the image with no explanations\n' \
+                               '\nOptions:\n(A) Image 1\n(B) Image 2'}]
+                }],
+                'contrast':  [{
+                    "role": "user",
+                    "content": [{"type": "text", "text": 'Answer the following multiple-choice question:\nGiven two images:'},
+                                {"type": "image"},
+                                {"type": "image"},
+                                {"type": "text", "text":'which image has a more contrast? just choose the image with no explanations\n' \
+                               '\nOptions:\n(A) Image 1\n(B) Image 2'}]
+                }],
+                'sharpness':  [{
+                    "role": "user",
+                    "content": [{"type": "text", "text": 'Answer the following multiple-choice question:\nGiven two images:'},
+                                {"type": "image"},
+                                {"type": "image"},
+                                {"type": "text", "text":'which image is sharper? just choose the image with no explanations\n' \
+                               '\nOptions:\n(A) Image 1\n(B) Image 2'}]
+                }],
+                     }
 llava_next_prompt = {
     '2afc': 'Answer the following multiple-choice question:\nHere are three images: <image> <image> <image>. ' \
             'If image 1 is the reference image, which image of the other two is more similar to the reference image?' \

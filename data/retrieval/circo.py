@@ -165,13 +165,3 @@ class CIRCODataset(Dataset):
             return len(self.img_ids)
         else:
             raise ValueError("mode should be in ['relative', 'classic']")
-
-    
-    
-if __name__ == "__main__":
-    from torchvision import transforms
-    processor = transforms.Compose([])
-    ds = CIRCODataset(img_path='/coco/', dataset_path="/vast/sg7457/uni_data/CIRCO", 
-                      split='val', mode='relative', preprocess=processor)
-    
-    print(ds.__getitem__(index=0))

@@ -57,12 +57,12 @@ class PieAppIQADataset(Dataset):
         data = self.dataset[idx // 2]
         idx = idx % 2
         if idx == 0:
-            imgs = [data['ref_img'], data['img_A']] 
+            imgs = [Image.open(data['ref_img']), Image.open(data['img_A'])] 
         else:             
-            imgs = [data['ref_img'], data['img_B']] 
+            imgs = [Image.open(data['ref_img']), Image.open(data['img_B'])] 
         
         if self.image_processor:
-            imgs = [self.image_processor(Image.open(_img)) for _img in imgs]
+            imgs = [self.image_processor(_img) for _img in imgs]
         
         lab = random.randint(0, 1)
         if lab == 1:
@@ -71,17 +71,3 @@ class PieAppIQADataset(Dataset):
     
     def __len__(self):
         return len(self.dataset) * 2
-    
-
-if __name__ == "__main__":
-    ds = PieAppIQADataset(data_dir='/vast/sg7457/uni_data', split='train')
-    print(len(ds))
-    print(ds.__getitem__(0))
-    
-    ds = PieAppIQADataset(data_dir='/vast/sg7457/uni_data', split='val')
-    print(len(ds))
-    print(ds.__getitem__(0))
-    
-    ds = PieAppIQADataset(data_dir='/vast/sg7457/uni_data', split='test')
-    print(len(ds))
-    print(ds.__getitem__(0))

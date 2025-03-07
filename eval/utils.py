@@ -156,13 +156,16 @@ def get_model_and_data(args):
     args.shuffle_data = fix_seed(args)
 
     if args.data not in ['roxford5k', 'rparis6k']:
+        
         test_dataset = get_data(
             args, tokenizer=tokenizer, image_processor=image_processor, split=args.split)
+        if args.model_type == 'gen-lmmm':
+            return tokenizer, model, test_dataset
+        
         dataloader = DataLoader(
             test_dataset, batch_size=args.batch_size, num_workers=args.num_workers,
             shuffle=args.shuffle_data)
         print(f'Data loaded ({len(test_dataset)} data points).')
-
         return tokenizer, model, dataloader
 
     else:

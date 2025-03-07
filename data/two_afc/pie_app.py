@@ -57,14 +57,14 @@ class PieApp2AFCDataset(Dataset):
 
     def __getitem__(self, idx):
         data = self.dataset[idx]
-        imgs = [data['ref_img'],  # ref
-                data['img_A'],  # left
-                data['img_B']  # right
+        imgs = [Image.open(data['ref_img']),  # ref
+                Image.open(data['img_A']),  # left
+                Image.open(data['img_B'])  # right
                 ]
         p = data['label']
 
         if self.image_processor:
-            imgs = [self.image_processor(Image.open(_img)) for _img in imgs]
+            imgs = [self.image_processor(_img) for _img in imgs]
         return *imgs, p, idx
 
     def __len__(self):

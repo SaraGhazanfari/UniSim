@@ -59,10 +59,10 @@ class PiPal(Dataset):
         
     def __getitem__(self, idx):
         data = self.dataset[idx]
-        imgs = [data['ref_img'], data['alt_img']] 
+        imgs = [Image.open(data['ref_img']), Image.open(data['alt_img'])] 
 
         if self.image_processor:
-            imgs = [self.image_processor(Image.open(_img)) for _img in imgs]
+            imgs = [self.image_processor(_img) for _img in imgs]
         
         lab = random.randint(0, 1)
         if lab == 1:

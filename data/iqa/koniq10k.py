@@ -72,9 +72,9 @@ class KonIQ10kPairs(KonIQ10k):
                 other_idx = random.randint(0, len(self.distr_sets) - 1)
             img_names = [self.distr_sets.loc[idx, 'image_name'],
                          self.distr_sets.loc[other_idx, 'image_name']]
-            imgs = [join(self.data_dir, _n) for _n in img_names] 
+            imgs = [Image.open(join(self.data_dir, _n)) for _n in img_names] 
             if self.transform_fn:
-                imgs = [self.transform_fn(Image.open(_img)) for _img in imgs]
+                imgs = [self.transform_fn(_img) for _img in imgs]
             scores = [self.get_score(idx, img_names[0]),
                       self.get_score(other_idx, img_names[1])]
             sh_idx = [0, 1]
@@ -86,8 +86,3 @@ class KonIQ10kPairs(KonIQ10k):
                 print(img_names)
 
             return *imgs, lab, scores
-                
-    
-# if __name__ == "__main__":
-#     ds = KonIQ10kPairs(split='train', attribute='quality', data_dir='/vast/sg7457/uni_data')
-#     print(len(ds))

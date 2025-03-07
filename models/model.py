@@ -91,7 +91,28 @@ def get_model(args, device):
                                                      cache_dir=args.cache_dir,
                                                      device_map="auto")
         return None, model, None, None
+    
+    if 'Qwen' in args.model_path:
+        from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 
+        # default: Load the model on the available device(s)
+        model = Qwen2VLForConditionalGeneration.from_pretrained(
+            args.model_path, torch_dtype="auto", device_map="auto", cache_dir=args.cache_dir
+        )
+        processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-7B-Instruct", cache_dir=args.cache_dir)
+        return processor, model, processor.image_processor, None
+
+    if 'InternVL2_5' in args.model_path:
+        from transformers import AutoModel, AutoTokenizer
+        model = AutoModel.from_pretrained(
+            args.model_path,
+            cache_dir='./',
+            torch_dtype=torch.bfloat16,
+            low_cpu_mem_usage=True,
+            use_flash_attn=True,
+            trust_remote_code=True).eval().cuda()
+        tokenizer = AutoTokenizer.from_pretrained(args.model_path, cache_dir='./', trust_remote_code=True, use_fast=False)
+        return tokenizer, model, None, None
     else:
         raise Exception(f'{args.model_path} model is not supported!')
 

@@ -94,9 +94,8 @@ class AGIQA3KPairs(AGIQA3K):
         indices = [i for i, m in zip(indices, mos) if m >= self.min_quality]
         indices = random.sample(indices, self.n_imgs)
         img_names = [self.data_info.iloc[i, 0] for i in indices]
-        imgs = [os.path.join(self.root_dir, _im) for _im in img_names]
+        imgs = [Image.open(os.path.join(self.root_dir, _im)) for _im in img_names]
         if self.transform:
-            imgs = [Image.open(_im) for _im in imgs]
             imgs = [self.transform(_im) for _im in imgs]
         mos = [self.data_info.loc[i, self.metric] for i in indices]
         #lab = int(mos[0] < mos[1])  # Image with higher score.

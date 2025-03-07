@@ -15,7 +15,7 @@ SCORE_TO_CAPTIONS_MAP = {
 }
 
 DEFAULT_DIRS = {
-    'coco-images': 'coco/images/val2014',
+    'coco-images': 'coco/val2014',
     'coco-modelcaptions': 'resources/all_captions_extended.csv',
     'coco-expertscores': 'resources/expert_worker_results_extended.csv',
     'coco-genericscores': 'resources/generic_worker_results_extended.csv',
@@ -33,10 +33,10 @@ class CocoTriplets(Dataset):
 
     def __init__(self, data_dir, score_type, transform_fn=None,
                  min_score=2, sampling_mode='rand', verbose=False, text_processor=None, instruct=None):
-        self.image_dir = join(data_dir, CocoTriplets.name, DEFAULT_DIRS['coco-images'])
-        self.captions = pd.read_csv(join(data_dir, DEFAULT_DIRS['coco-modelcaptions']))
+        self.image_dir = join('/', DEFAULT_DIRS['coco-images'])
+        self.captions = pd.read_csv(join(data_dir, CocoTriplets.name, DEFAULT_DIRS['coco-modelcaptions']))
         self.min_score = min_score
-        self.scores = pd.read_csv(join(data_dir, DEFAULT_DIRS[score_type]))
+        self.scores = pd.read_csv(join(data_dir, CocoTriplets.name, DEFAULT_DIRS[score_type]))
         self.scores = self.scores[self.scores['max_score'] >= self.min_score
                                   ].reset_index(drop=True)
         self.transform_fn = transform_fn
@@ -60,9 +60,8 @@ class CocoTriplets(Dataset):
 
         if self.sampling_mode == 'rand':
             img_name = self.scores.loc[idx, 'Image_URL']
-            img = join(self.image_dir, img_name)
+            img = Image.open(join(self.image_dir, img_name))
             if self.transform_fn:
-                img = Image.open(img)
                 img = self.transform_fn(img)
             scores = {k: self.scores.loc[idx, k] for k in SCORE_TO_CAPTIONS_MAP.keys()}
             # Sample caption with highest score.
@@ -82,11 +81,11 @@ class CocoTriplets(Dataset):
         
         elif self.sampling_mode == 'all-zeros':
             img_name = self.all_triplets[idx][0]
-            img = join(self.image_dir, img_name)
+            img = Image.open(join(self.image_dir, img_name))
             
             if self.transform_fn:
-                img = Image.open(img)
                 img = self.transform_fn(img)
+                
             orig_idx = self.scores.index[self.scores['Image_URL'] == img_name][0]
             scores = {k: self.scores.loc[orig_idx, k] for k in SCORE_TO_CAPTIONS_MAP.keys()}
             # Sample caption with highest score.
@@ -110,7 +109,7 @@ class CocoTriplets(Dataset):
         if self.instruct:
             caps = [self.text_processor(self.instruct.format(cap1=caps[0], cap2=caps[1]))]
         
-        return img, *caps, lab
+        return img, caps, lab
 
     def __len__(self):
         if self.sampling_mode == 'rand':
@@ -118,17 +117,4 @@ class CocoTriplets(Dataset):
         elif self.sampling_mode == 'all-zeros':
             return len(self.all_triplets)
 
-if __name__ == "__main__":
-    import shutil
-    import os
-    
-    ds = CocoTriplets(data_dir='/uni_data/coco-triplets', sampling_mode='all-zeros',
-                      score_type='coco-expertscores', min_score=3)
-    print(len(ds))
-    image_set = set()
-    for i in range(len(ds)):
-        image_set.add(ds.__getitem__(i)[0].replace('/uni_data/coco-triplets', '').replace('/images', ''))
-    
-    for img in image_set:
-        shutil.copy(img, os.path.join('./images/', img.split('/')[-1]))
         
